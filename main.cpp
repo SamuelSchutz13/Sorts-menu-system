@@ -12,7 +12,7 @@ void insert_element(std::vector<Number> &array) {
     std::cout << "Digite o numero a ser inserido: ";
     std::cin >> number;
     array.push_back(Number(number));
-    std::cout << "Numero" << number << "foi inserido com sucesso" << std::endl;
+    std::cout << "Numero " << number << " foi inserido com sucesso" << std::endl;
 }
 
 void insertion_sort() {
@@ -64,9 +64,10 @@ int main() {
     
     do {
         menu();
-        scanf("%d", &command);
-        //process_menu(command);
+        std::cin >> command;
+        process_menu(array, command);
     } while (command != 5);
+
 
     return 0;
 }
