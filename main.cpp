@@ -15,8 +15,28 @@ void insert_element(std::vector<Number> &array) {
     std::cout << "Numero " << number << " foi inserido com sucesso" << std::endl;
 }
 
-void insertion_sort() {
+void insertion_sort(std::vector<Number> &array) {
+    int number = array.size();
 
+    for (int i = 1; i < number; i++) {
+        Number key = array[i];
+        int j = i - 1;
+
+        while (j >= 0 && array[j].value > key.value) {
+            array[j + 1] = array[j];
+            j = j - 1;
+        }
+
+        array[j + 1] = key;
+    }
+
+    std::cout << "Array ordenado usando Insertion Sort: ";
+
+    for (int i = 0; i < number; i++) {
+        std::cout << array[i].value << " ";
+    }
+
+    std::cout << std::endl;
 }
 
 void merge_sort() {
@@ -42,7 +62,7 @@ void process_menu(std::vector<Number> &array, int command) {
             insert_element(array);   
             break;
         case 2:
-            insertion_sort();
+            insertion_sort(array);
             break;
         case 3:
             merge_sort();
