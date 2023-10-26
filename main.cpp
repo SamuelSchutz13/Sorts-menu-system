@@ -39,20 +39,65 @@ void insertion_sort(std::vector<Number> &array) {
     std::cout << std::endl;
 }
 
-void merge_sort() {
+void merge_sort(std::vector<Number> &array, int left, int right) {
+    if (left < right) {
+        int middle = left + (right - left) / 2;
 
+        merge_sort(array, left, middle);
+        merge_sort(array, middle + 1, right);
+
+        std::vector<Number> mergedArray;
+
+        int i = left, j = middle + 1;
+
+        while(i <= middle && j <= right) {
+            if (array[i].value <= array[j].value) {
+                mergedArray.push_back(array[i]);
+                i++;
+            } else {
+                mergedArray.push_back(array[j]);
+                j++;
+            }
+        }
+
+        while(i <= middle) {
+            mergedArray.push_back(array[i]);
+            i++;
+        }
+
+        while(j <= right) {
+            mergedArray.push_back(array[j]);
+            j++;
+        }
+
+        for(i = left, j = 0; i <= right; i++, j++) {
+            array[i] = mergedArray[j];
+        }
+
+        std::cout << "Array ordenado usando Merge Sort: ";
+
+        for(i = left; i <= right; i++) {
+            std::cout << array[i].value << " ";
+        }
+
+        std::cout << std::endl;
+    }
 }
+
+
 
 void quick_sort() {
 
 }
 
 void menu() {
+    std::cout << "--------------------------------------------" << std::endl;
     std::cout << "1 - Inserir elemento" << std::endl;
     std::cout << "2 - Ordenar Insertion Sort" << std::endl;
     std::cout << "3 - Ordenar Merge Sort" << std::endl;
     std::cout << "4 - Ordenar Quick Sort" << std::endl;
     std::cout << "5 - Sair" << std::endl;
+    std::cout << "--------------------------------------------" << std::endl;
     std::cout << "Escolha uma opcao: " << std::endl;
 }
 
@@ -65,7 +110,7 @@ void process_menu(std::vector<Number> &array, int command) {
             insertion_sort(array);
             break;
         case 3:
-            merge_sort();
+            merge_sort(array, 0, array.size() - 1);
             break;
         case 4:
             quick_sort();
