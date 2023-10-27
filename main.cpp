@@ -1,18 +1,32 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-
+#include <cstdlib>
+#include <ctime>
 struct Number {
     int value;
-    Number (int val) : value(val) {}
+    Number(int val) : value(val) {}
 };
 
 void insert_element(std::vector<Number> &array) {
-    int number;
-    std::cout << "Digite o numero a ser inserido: ";
-    std::cin >> number;
-    array.push_back(Number(number));
-    std::cout << "Numero " << number << " foi inserido com sucesso" << std::endl;
+    int count;
+    std::cout << "Quantos numeros deseja inserir: ";
+    std::cin >> count;
+
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    std::vector<int> insertedNumbers;
+
+    for (int i = 0; i < count; i++) {
+        int number = std::rand();
+        array.push_back(Number(number));
+        insertedNumbers.push_back(number);
+    }
+
+    std::cout << "Numeros inseridos: ";
+    for (int i = 0; i < insertedNumbers.size(); i++) {
+        std::cout << insertedNumbers[i] << " ";
+    }
+    std::cout << std::endl;
 }
 
 void insertion_sort(std::vector<Number> &array) {
@@ -50,7 +64,7 @@ void merge_sort(std::vector<Number> &array, int left, int right) {
 
         int i = left, j = middle + 1;
 
-        while(i <= middle && j <= right) {
+        while (i <= middle && j <= right) {
             if (array[i].value <= array[j].value) {
                 mergedArray.push_back(array[i]);
                 i++;
@@ -60,34 +74,60 @@ void merge_sort(std::vector<Number> &array, int left, int right) {
             }
         }
 
-        while(i <= middle) {
+        while (i <= middle) {
             mergedArray.push_back(array[i]);
             i++;
         }
 
-        while(j <= right) {
+        while (j <= right) {
             mergedArray.push_back(array[j]);
             j++;
         }
 
-        for(i = left, j = 0; i <= right; i++, j++) {
+        for (i = left, j = 0; i <= right; i++, j++) {
             array[i] = mergedArray[j];
         }
-
-        std::cout << "Array ordenado usando Merge Sort: ";
-
-        for(i = left; i <= right; i++) {
-            std::cout << array[i].value << " ";
-        }
-
-        std::cout << std::endl;
     }
 }
 
+int partitionArrayInQuickSort(std::vector<Number> &array, int low, int high) {
+    Number pivot = array[high];
+    int i = (low - 1);
 
+    for (int j = low; j <= high - 1; j++) {
+        if (array[j].value < pivot.value) {
+            i++;
+            std::swap(array[i], array[j]);
+        }
+    }
 
-void quick_sort() {
+    std::swap(array[i + 1], array[high]);
+    return (i + 1);
+}
 
+void quick_sort(std::vector<Number> &array, int low, int high) {
+    if (low < high) {
+        int pi = partitionArrayInQuickSort(array, low, high);
+
+        quick_sort(array, low, pi - 1);
+        quick_sort(array, pi + 1, high);
+    }
+}
+
+void save_original_order(const std::vector<Number> &array, std::vector<Number> &original) {
+    original = array;
+}
+
+void restore_original_order(std::vector<Number> &array, const std::vector<Number> &original) {
+    array = original;
+}
+
+void printArray(const std::vector<Number> &array) {
+    std::cout << "Array ordenado: ";
+    for (const Number &num : array) {
+        std::cout << num.value << " ";
+    }
+    std::cout << std::endl;
 }
 
 void menu() {
@@ -104,35 +144,38 @@ void menu() {
 void process_menu(std::vector<Number> &array, int command) {
     switch (command) {
         case 1:
-            insert_element(array);   
+            insert_element(array);
             break;
         case 2:
             insertion_sort(array);
+            printArray(array);
             break;
         case 3:
             merge_sort(array, 0, array.size() - 1);
+            printArray(array);
             break;
         case 4:
-            quick_sort();
+            quick_sort(array, 0, array.size() - 1);
+            printArray(array);
             break;
         case 5:
-        std::cout << "Saindo do sistema..." << std::endl;
-        exit(1);
+            std::cout << "Saindo do sistema..." << std::endl;
+            exit(1);
             break;
-        default: std::cout << "Comando invalido, tente novamente" << std::endl;
+        default:
+            std::cout << "Comando invalido, tente novamente" << std::endl;
     }
 }
 
 int main() {
     int command;
     std::vector<Number> array;
-    
+
     do {
         menu();
         std::cin >> command;
         process_menu(array, command);
     } while (command != 5);
-
 
     return 0;
 }
