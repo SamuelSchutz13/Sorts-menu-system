@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+
 struct Number {
     int value;
     Number(int val) : value(val) {}
@@ -30,6 +31,11 @@ void insert_element(std::vector<Number> &array) {
 }
 
 void insertion_sort(std::vector<Number> &array) {
+    if (array.empty()) {
+        std::cout << "O vetor esta vazio, insira elementos" << std::endl;
+        return;
+    }
+
     int number = array.size();
 
     for (int i = 1; i < number; i++) {
@@ -51,6 +57,8 @@ void insertion_sort(std::vector<Number> &array) {
     }
 
     std::cout << std::endl;
+
+    array.clear();
 }
 
 void merge_sort(std::vector<Number> &array, int left, int right) {
@@ -90,8 +98,9 @@ void merge_sort(std::vector<Number> &array, int left, int right) {
     }
 }
 
-int partitionArrayInQuickSort(std::vector<Number> &array, int low, int high) {
+int partitionArray(std::vector<Number> &array, int low, int high) {
     Number pivot = array[high];
+
     int i = (low - 1);
 
     for (int j = low; j <= high - 1; j++) {
@@ -107,27 +116,27 @@ int partitionArrayInQuickSort(std::vector<Number> &array, int low, int high) {
 
 void quick_sort(std::vector<Number> &array, int low, int high) {
     if (low < high) {
-        int pi = partitionArrayInQuickSort(array, low, high);
+        int pi = partitionArray(array, low, high);
 
         quick_sort(array, low, pi - 1);
         quick_sort(array, pi + 1, high);
     }
 }
 
-void save_original_order(const std::vector<Number> &array, std::vector<Number> &original) {
-    original = array;
-}
+void printArray(std::vector<Number> &array) {
+    if (array.empty()) {
+        std::cout << "O vetor esta vazio, insira elementos" << std::endl;
+        return;
+    }
 
-void restore_original_order(std::vector<Number> &array, const std::vector<Number> &original) {
-    array = original;
-}
-
-void printArray(const std::vector<Number> &array) {
     std::cout << "Array ordenado: ";
-    for (const Number &num : array) {
+    for (Number &num : array) {
         std::cout << num.value << " ";
     }
+    
     std::cout << std::endl;
+
+    array.clear();
 }
 
 void menu() {
@@ -141,7 +150,7 @@ void menu() {
     std::cout << "Escolha uma opcao: " << std::endl;
 }
 
-void process_menu(std::vector<Number> &array, int command) {
+void process_menu(std::vector<Number> &array, int command, std::vector<Number> &original) {
     switch (command) {
         case 1:
             insert_element(array);
@@ -170,12 +179,13 @@ void process_menu(std::vector<Number> &array, int command) {
 int main() {
     int command;
     std::vector<Number> array;
+    std::vector<Number> original;
 
     do {
         menu();
         std::cin >> command;
-        process_menu(array, command);
-    } while (command != 5);
+        process_menu(array, command, original);
+    } while (command != 6);
 
     return 0;
 }
