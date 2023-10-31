@@ -4,11 +4,17 @@
 #include <cstdlib>
 #include <ctime>
 #include <chrono>
+#include <iomanip>
 
 struct Number {
     int value;
     Number(int val) : value(val) {}
 };
+
+void print_time(long long duration) {
+    double milliseconds = static_cast<double>(duration) / 1e6;
+    std::cout << "Tempo de resposta: " << std::fixed << std::setprecision(3) << milliseconds << "ms" << std::endl;
+}
 
 void insert_element(std::vector<Number> &array) {
     int count;
@@ -33,7 +39,7 @@ void insert_element(std::vector<Number> &array) {
 
 void insertion_sort(std::vector<Number> &array, bool ascending) {
     if (array.empty()) {
-        std::cout << "O vetor está vazio, insira elementos" << std::endl;
+        std::cout << "O vetor esta vazio, insira elementos" << std::endl;
         return;
     }
 
@@ -63,8 +69,8 @@ void insertion_sort(std::vector<Number> &array, bool ascending) {
 
     std::cout << std::endl;
 
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-    std::cout << "Tempo de resposta: " << duration << " ms" << std::endl;
+    auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    print_time(duration);
 
     array.clear();
 }
@@ -108,8 +114,8 @@ void merge_sort(std::vector<Number> &array, int left, int right, bool ascending)
 
         auto end = std::chrono::high_resolution_clock::now();
 
-        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-        std::cout << "Tempo de resposta: " << duration << " ms" << std::endl;
+        auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+        print_time(duration);
     }
 }
 
@@ -142,20 +148,18 @@ int partitionArray(std::vector<Number> &array, int low, int high, bool ascending
     return (i + 1);
 }
 
-void printArray(std::vector<Number> &array) {
+void printArray(const std::vector<Number> &array) {
     if (array.empty()) {
         std::cout << "O vetor esta vazio, insira elementos" << std::endl;
         return;
     }
 
     std::cout << "Array ordenado: ";
-    for (Number &num : array) {
+    for (const Number &num : array) {
         std::cout << num.value << " ";
     }
     
     std::cout << std::endl;
-
-    array.clear();
 }
 
 void menu() {
@@ -200,7 +204,7 @@ void process_menu(std::vector<Number> &array, int command, std::vector<Number> &
             exit(1);
             break;
         default:
-            std::cout << "Comando inválido, tente novamente" << std::endl;
+            std::cout << "Comando invalido, tente novamente" << std::endl;
     }
 }
 
