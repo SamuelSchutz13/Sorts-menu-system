@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 
 struct Number {
     int value;
@@ -30,25 +31,29 @@ void insert_element(std::vector<Number> &array) {
     std::cout << std::endl;
 }
 
-void insertion_sort(std::vector<Number> &array) {
+void insertion_sort(std::vector<Number> &array, bool ascending) {
     if (array.empty()) {
-        std::cout << "O vetor esta vazio, insira elementos" << std::endl;
+        std::cout << "O vetor está vazio, insira elementos" << std::endl;
         return;
     }
 
     int number = array.size();
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     for (int i = 1; i < number; i++) {
         Number key = array[i];
         int j = i - 1;
 
-        while (j >= 0 && array[j].value > key.value) {
+        while (j >= 0 && ((ascending && array[j].value > key.value) || (!ascending && array[j].value < key.value))) {
             array[j + 1] = array[j];
             j = j - 1;
         }
 
         array[j + 1] = key;
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
 
     std::cout << "Array ordenado usando Insertion Sort: ";
 
@@ -58,22 +63,27 @@ void insertion_sort(std::vector<Number> &array) {
 
     std::cout << std::endl;
 
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "Tempo de resposta: " << duration << " ms" << std::endl;
+
     array.clear();
 }
 
-void merge_sort(std::vector<Number> &array, int left, int right) {
+void merge_sort(std::vector<Number> &array, int left, int right, bool ascending) {
     if (left < right) {
         int middle = left + (right - left) / 2;
 
-        merge_sort(array, left, middle);
-        merge_sort(array, middle + 1, right);
+        auto start = std::chrono::high_resolution_clock::now();
+
+        merge_sort(array, left, middle, ascending);
+        merge_sort(array, middle + 1, right, ascending);
 
         std::vector<Number> mergedArray;
 
         int i = left, j = middle + 1;
 
         while (i <= middle && j <= right) {
-            if (array[i].value <= array[j].value) {
+            if ((ascending && array[i].value <= array[j].value) || (!ascending && array[i].value >= array[j].value)) {
                 mergedArray.push_back(array[i]);
                 i++;
             } else {
@@ -95,32 +105,41 @@ void merge_sort(std::vector<Number> &array, int left, int right) {
         for (i = left, j = 0; i <= right; i++, j++) {
             array[i] = mergedArray[j];
         }
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+        std::cout << "Tempo de resposta: " << duration << " ms" << std::endl;
     }
 }
 
-int partitionArray(std::vector<Number> &array, int low, int high) {
+int partitionArray(std::vector<Number> &array, int low, int high, bool ascending);
+
+void quick_sort(std::vector<Number> &array, int low, int high, bool ascending) {
+    if (low < high) {
+        int pi = partitionArray(array, low, high, ascending);
+
+        quick_sort(array, low, pi - 1, ascending);
+        quick_sort(array, pi + 1, high, ascending);
+    }
+}
+
+int partitionArray(std::vector<Number> &array, int low, int high, bool ascending) {
     Number pivot = array[high];
 
     int i = (low - 1);
 
     for (int j = low; j <= high - 1; j++) {
-        if (array[j].value < pivot.value) {
+        bool shouldSwap = (ascending && array[j].value < pivot.value) || (!ascending && array[j].value > pivot.value);
+        if (shouldSwap) {
             i++;
             std::swap(array[i], array[j]);
         }
     }
 
     std::swap(array[i + 1], array[high]);
+
     return (i + 1);
-}
-
-void quick_sort(std::vector<Number> &array, int low, int high) {
-    if (low < high) {
-        int pi = partitionArray(array, low, high);
-
-        quick_sort(array, low, pi - 1);
-        quick_sort(array, pi + 1, high);
-    }
 }
 
 void printArray(std::vector<Number> &array) {
@@ -156,15 +175,24 @@ void process_menu(std::vector<Number> &array, int command, std::vector<Number> &
             insert_element(array);
             break;
         case 2:
-            insertion_sort(array);
+            bool ascending;
+            std::cout << "Deseja ordenar em ordem crescente (1) ou decrescente (0)? ";
+            std::cin >> ascending;
+            insertion_sort(array, ascending);
             printArray(array);
             break;
         case 3:
-            merge_sort(array, 0, array.size() - 1);
+            bool ascendingMergeSort;
+            std::cout << "Deseja ordenar o Merge Sort em ordem crescente (1) ou decrescente (0)? ";
+            std::cin >> ascendingMergeSort;
+            merge_sort(array, 0, array.size() - 1, ascendingMergeSort);
             printArray(array);
             break;
         case 4:
-            quick_sort(array, 0, array.size() - 1);
+            bool ascendingQuickSort;
+            std::cout << "Deseja ordenar o Quick Sort em ordem crescente (1) ou decrescente (0)? ";
+            std::cin >> ascendingQuickSort;
+            quick_sort(array, 0, array.size() - 1, ascendingQuickSort);
             printArray(array);
             break;
         case 5:
@@ -172,7 +200,7 @@ void process_menu(std::vector<Number> &array, int command, std::vector<Number> &
             exit(1);
             break;
         default:
-            std::cout << "Comando invalido, tente novamente" << std::endl;
+            std::cout << "Comando inválido, tente novamente" << std::endl;
     }
 }
 
@@ -185,7 +213,7 @@ int main() {
         menu();
         std::cin >> command;
         process_menu(array, command, original);
-    } while (command != 6);
+    } while (command != 5);
 
     return 0;
 }
